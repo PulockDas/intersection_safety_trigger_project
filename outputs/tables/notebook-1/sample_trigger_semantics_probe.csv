@@ -1,0 +1,4 @@
+zip_name,internal_path,top_level_type,top_level_keys,first_item_keys,sample_reference_names,sample_associated_lanes,sample_associated_zones,sample_associated_sensors,sample_timestamps,error
+Training Data 1.zip,Run_166/Radars_Run_166_traffic-triggers-output.json,list,<list>,topic|payload|qos|receivedAt|retain,,,,,2024-02-16T14:55:51+00:00,
+Training Data 1.zip,Run_844/Radars_Run_844_traffic-triggers-output.json,list,<list>,topic|payload|qos|receivedAt|retain,,,,,2024-01-31T15:37:11+00:00,
+Training Data 1.zip,Run_327/Radars_Run_327_traffic-triggers-output.json,list,<list>,topic|payload|qos|receivedAt|retain,,,,,2024-01-30T00:42:36+00:00|2024-01-30T00:42:37+00:00,

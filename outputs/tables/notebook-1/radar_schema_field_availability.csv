@@ -1,0 +1,33 @@
+field_name,times_seen,pct_of_sample,example_value,example_path,notes
+id,4,100%,243,Training Data 1.zip / Run_0166 / sensor2,FOUND
+class,4,100%,undefined,Training Data 1.zip / Run_0166 / sensor2,FOUND
+heading,4,100%,161.2992401123047,Training Data 1.zip / Run_0166 / sensor2,FOUND
+speed,4,100%,0.15457279980182648,Training Data 1.zip / Run_0166 / sensor2,FOUND
+length,4,100%,4.599999904632568,Training Data 1.zip / Run_0166 / sensor2,FOUND
+position_front,4,100%,"[-142.9612274169922, 14.689058303833008, 0.0]",Training Data 1.zip / Run_0166 / sensor2,FOUND
+within_zone,4,100%,['zoneD'],Training Data 1.zip / Run_0166 / sensor2,FOUND
+closest_lane,4,100%,lane1,Training Data 1.zip / Run_0166 / sensor2,FOUND
+position_facing,4,100%,"[-138.6040802001953, 13.214179992675781, 0.0]",Training Data 1.zip / Run_0166 / sensor2,FOUND
+tracking_status,4,100%,"{'cycles_since_last_update': 0, 'mileage': 2.445347309112549, 'new_object': False, 'quality': 0.6265",Training Data 1.zip / Run_0166 / sensor2,FOUND
+type,0,0%,,,not found in sample
+label,0,0%,,,not found in sample
+category,0,0%,,,not found in sample
+classification,0,0%,,,not found in sample
+object_id,0,0%,,,not found in sample
+track_id,0,0%,,,not found in sample
+width,0,0%,,,not found in sample
+orientation,0,0%,,,not found in sample
+course,0,0%,,,not found in sample
+speed_magnitude,0,0%,,,not found in sample
+velocity,0,0%,,,not found in sample
+lane,0,0%,,,not found in sample
+lane_id,0,0%,,,not found in sample
+height,0,0%,,,not found in sample
+zone_id,0,0%,,,not found in sample
+zone,0,0%,,,not found in sample
+x,0,0%,,,not found in sample
+position,0,0%,,,not found in sample
+y,0,0%,,,not found in sample
+z,0,0%,,,not found in sample
+tracking_quality,0,0%,,,not found in sample
+confidence,0,0%,,,not found in sample

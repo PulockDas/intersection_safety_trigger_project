@@ -1,0 +1,13 @@
+zip_name,run_id,sensor_id,num_records,top_level_type,payload_encoding,has_payload_dict,object_list_field,has_objects,object_count_sample,has_id,has_class,has_speed,has_heading,has_position_front,has_position_facing,has_position_any,has_lane,has_zone,has_tracking_status,error
+Training Data 1.zip,0166,1,1681,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 1.zip,0166,2,1680,list,dict_or_list,True,objects,True,1,True,True,True,True,True,True,True,True,True,True,
+Training Data 1.zip,0166,3,2,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 1.zip,0166,4,1682,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 2.zip,0324,1,1867,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 2.zip,0324,2,1868,list,dict_or_list,True,objects,True,2,True,True,True,True,True,True,True,True,True,True,
+Training Data 2.zip,0324,3,2,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 2.zip,0324,4,1870,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 3.zip,0089,1,1744,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 3.zip,0089,2,1750,list,dict_or_list,True,objects,True,1,True,True,True,True,True,True,True,True,True,True,
+Training Data 3.zip,0089,3,1750,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
+Training Data 3.zip,0089,4,1749,list,dict_or_list,True,,False,0,False,False,False,False,False,False,False,False,False,False,
