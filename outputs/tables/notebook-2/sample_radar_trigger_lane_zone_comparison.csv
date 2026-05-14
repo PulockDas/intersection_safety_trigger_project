@@ -1,0 +1,4 @@
+zip_name,run_id,trigger_lanes,trigger_zones,radar_lanes,radar_zones,lane_overlap,zone_overlap,lanes_compatible,zones_compatible,note
+Training Data 1.zip,0048,,,lane10,['zoneAI'],,,True,True,missing data
+Training Data 2.zip,0045,,,lane10,[],,,True,True,missing data
+Training Data 3.zip,0001,,,lane10,['zoneAI'],,,True,True,missing data

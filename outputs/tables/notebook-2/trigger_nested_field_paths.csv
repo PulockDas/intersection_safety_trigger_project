@@ -1,0 +1,31 @@
+zip_name,run_id,field_name,dotted_path,value_type,sample_value
+Training Data 1.zip,0048,trigger_outputs,trigger_outputs,list,"[{'traffic_triggers': [{'associated_lane': 'lane22', 'associated_sensor': 'sensor3', 'associated_zone': 'zoneK', 'refere"
+Training Data 1.zip,0048,traffic_triggers,trigger_outputs[0].traffic_triggers,list,"[{'associated_lane': 'lane22', 'associated_sensor': 'sensor3', 'associated_zone': 'zoneK', 'reference_name': 'trigger_11"
+Training Data 1.zip,0048,associated_lane,trigger_outputs[0].traffic_triggers[0].associated_lane,str,lane22
+Training Data 1.zip,0048,associated_lane,trigger_outputs[0].traffic_triggers[1].associated_lane,str,lane24
+Training Data 1.zip,0048,associated_sensor,trigger_outputs[0].traffic_triggers[0].associated_sensor,str,sensor3
+Training Data 1.zip,0048,associated_sensor,trigger_outputs[0].traffic_triggers[1].associated_sensor,str,sensor3
+Training Data 1.zip,0048,associated_zone,trigger_outputs[0].traffic_triggers[0].associated_zone,str,zoneK
+Training Data 1.zip,0048,associated_zone,trigger_outputs[0].traffic_triggers[1].associated_zone,str,zoneL
+Training Data 1.zip,0048,reference_name,trigger_outputs[0].traffic_triggers[0].reference_name,str,trigger_11_3
+Training Data 1.zip,0048,reference_name,trigger_outputs[0].traffic_triggers[1].reference_name,str,trigger_12_4
+Training Data 2.zip,0045,trigger_outputs,trigger_outputs,list,[]
+Training Data 2.zip,0045,traffic_triggers,trigger_outputs[0].traffic_triggers,list,"[{'associated_lane': 'lane22', 'associated_sensor': 'sensor3', 'associated_zone': 'zoneK', 'reference_name': 'trigger_11"
+Training Data 2.zip,0045,associated_lane,trigger_outputs[0].traffic_triggers[0].associated_lane,str,lane22
+Training Data 2.zip,0045,associated_lane,trigger_outputs[0].traffic_triggers[1].associated_lane,str,lane24
+Training Data 2.zip,0045,associated_sensor,trigger_outputs[0].traffic_triggers[0].associated_sensor,str,sensor3
+Training Data 2.zip,0045,associated_sensor,trigger_outputs[0].traffic_triggers[1].associated_sensor,str,sensor3
+Training Data 2.zip,0045,associated_zone,trigger_outputs[0].traffic_triggers[0].associated_zone,str,zoneK
+Training Data 2.zip,0045,associated_zone,trigger_outputs[0].traffic_triggers[1].associated_zone,str,zoneL
+Training Data 2.zip,0045,reference_name,trigger_outputs[0].traffic_triggers[0].reference_name,str,trigger_11_3
+Training Data 2.zip,0045,reference_name,trigger_outputs[0].traffic_triggers[1].reference_name,str,trigger_12_4
+Training Data 3.zip,0001,trigger_outputs,trigger_outputs,list,[]
+Training Data 3.zip,0001,traffic_triggers,trigger_outputs[0].traffic_triggers,list,"[{'associated_lane': 'lane22', 'associated_sensor': 'sensor3', 'associated_zone': 'zoneK', 'reference_name': 'trigger_11"
+Training Data 3.zip,0001,associated_lane,trigger_outputs[0].traffic_triggers[0].associated_lane,str,lane22
+Training Data 3.zip,0001,associated_lane,trigger_outputs[0].traffic_triggers[1].associated_lane,str,lane24
+Training Data 3.zip,0001,associated_sensor,trigger_outputs[0].traffic_triggers[0].associated_sensor,str,sensor3
+Training Data 3.zip,0001,associated_sensor,trigger_outputs[0].traffic_triggers[1].associated_sensor,str,sensor3
+Training Data 3.zip,0001,associated_zone,trigger_outputs[0].traffic_triggers[0].associated_zone,str,zoneK
+Training Data 3.zip,0001,associated_zone,trigger_outputs[0].traffic_triggers[1].associated_zone,str,zoneL
+Training Data 3.zip,0001,reference_name,trigger_outputs[0].traffic_triggers[0].reference_name,str,trigger_11_3
+Training Data 3.zip,0001,reference_name,trigger_outputs[0].traffic_triggers[1].reference_name,str,trigger_12_4

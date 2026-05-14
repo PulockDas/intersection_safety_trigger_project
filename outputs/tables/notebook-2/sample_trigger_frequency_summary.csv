@@ -1,0 +1,4 @@
+zip_name,run_id,total_records,records_with_events,records_empty,total_events,unique_reference_names,unique_lanes,unique_zones,unique_sensors,payload_encoding,payload_keys
+Training Data 1.zip,0048,1965,1801,164,1801,0,0,0,0,dict_or_list,"['timestamp', 'trigger_outputs']"
+Training Data 2.zip,0045,1808,798,1010,798,0,0,0,0,dict_or_list,"['timestamp', 'trigger_outputs']"
+Training Data 3.zip,0001,3236,1733,1503,1733,0,0,0,0,dict_or_list,"['timestamp', 'trigger_outputs']"
