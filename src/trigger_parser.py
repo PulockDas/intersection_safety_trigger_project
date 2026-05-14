@@ -2,24 +2,25 @@
 trigger_parser.py — Helpers for reading and inspecting trigger JSON files.
 
 All operations are read-only; nothing is extracted to disk.
-Used by notebooks/02_trigger_log_deep_inspection.ipynb.
+Used by notebooks/02_trigger_log_deep_inspection.ipynb and 02b validation.
+
+Trigger events live at:
+    payload["trigger_outputs"][i]["traffic_triggers"][j]
+Per-event wall time is ``payload["timestamp"]`` (not MQTT ``receivedAt``).
 """
 
 from __future__ import annotations
 
 import re
 import zipfile
-from collections import Counter, defaultdict
+from collections import defaultdict
+from datetime import timezone
 from pathlib import Path
 from typing import Any
 
-from radar_parser import (
-    safe_json_load_from_zip,
-    decode_payload_if_needed,
-    find_timestamp_fields,
-    guess_timestamp_format,
-    TIMESTAMP_FIELD_NAMES,
-)
+from dateutil import parser as dateutil_parser
+
+from radar_parser import decode_payload_if_needed
 
 # ── File-pattern for trigger output JSON ─────────────────────────────────────
 TRIGGER_FILE_PATTERN = re.compile(
@@ -33,12 +34,6 @@ TRIGGER_SEMANTIC_FIELDS: set[str] = {
     "detector_id", "lane_id", "zone_id", "sensor_id",
     "name", "lane", "zone", "sensor",
 }
-
-# ── Known container field names that may hold a list of trigger events ────────
-TRIGGER_LIST_FIELDS: list[str] = [
-    "traffic_triggers", "trigger_outputs", "triggers",
-    "events", "activations", "trigger_events", "outputs", "detections",
-]
 
 # ── Radar file pattern (reused for cross-check) ───────────────────────────────
 RADAR_FILE_PATTERN = re.compile(
@@ -139,136 +134,104 @@ def find_field_paths_recursive(
 # Trigger event extraction
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _extract_from_item(item: dict, base_event: dict) -> list[dict]:
-    """
-    From one dict inside a trigger container, build one or more event rows.
-    Handles nested trigger_outputs lists.
-    """
-    events = []
-
-    # Copy known semantic fields from this item
-    event = dict(base_event)
-    for field in ("reference_name", "associated_lane", "associated_zone",
-                  "associated_sensor", "trigger_id", "trigger_type",
-                  "lane_id", "zone_id", "sensor_id"):
-        if item.get(field) is not None:
-            event[field] = item[field]
-
-    # If nested trigger_outputs exist, recurse one level
-    nested = item.get("trigger_outputs") or item.get("outputs")
-    if isinstance(nested, list) and nested:
-        for j, nitem in enumerate(nested):
-            if isinstance(nitem, dict):
-                nevent = dict(event)
-                nevent["trigger_index"] = j
-                for field in ("reference_name", "associated_lane",
-                              "associated_zone", "associated_sensor"):
-                    if nitem.get(field) is not None:
-                        nevent[field] = nitem[field]
-                events.append(nevent)
-        return events
-
-    events.append(event)
-    return events
-
-
 def extract_trigger_events(payload: Any) -> list[dict]:
     """
-    Extract a list of normalized trigger event dicts from a decoded payload dict.
+    Extract trigger event dicts from a decoded payload.
 
-    Each returned dict has at minimum:
-        reference_name, associated_lane, associated_zone, associated_sensor,
-        trigger_output_index, trigger_index, container_field
-    (values may be None if not found).
+    Walks ``payload["trigger_outputs"][i]["traffic_triggers"][j]`` only.
+    Each dict includes trigger_output_index, trigger_index, semantic fields,
+    and container_field ``trigger_outputs.traffic_triggers``.
     """
     if not isinstance(payload, dict):
         return []
 
+    outputs = payload.get("trigger_outputs")
+    if not isinstance(outputs, list) or not outputs:
+        return []
+
     events: list[dict] = []
-
-    # Try known list container fields
-    for container_field in TRIGGER_LIST_FIELDS:
-        container = payload.get(container_field)
-        if not isinstance(container, list) or not container:
+    for i, block in enumerate(outputs):
+        if not isinstance(block, dict):
             continue
-        for i, item in enumerate(container):
-            if not isinstance(item, dict):
+        triggers = block.get("traffic_triggers")
+        if not isinstance(triggers, list):
+            continue
+        for j, trig in enumerate(triggers):
+            if not isinstance(trig, dict):
                 continue
-            base = {
+            events.append({
                 "trigger_output_index": i,
-                "trigger_index":        0,
-                "container_field":      container_field,
-                "reference_name":       None,
-                "associated_lane":      None,
-                "associated_zone":      None,
-                "associated_sensor":    None,
-            }
-            events.extend(_extract_from_item(item, base))
-        if events:
-            return events   # return on first container field that yields results
-
-    # Fallback: payload itself may be a single trigger event dict
-    if any(payload.get(f) is not None for f in
-           ("reference_name", "associated_lane", "associated_zone")):
-        events.append({
-            "trigger_output_index": 0,
-            "trigger_index":        0,
-            "container_field":      "payload_direct",
-            "reference_name":       payload.get("reference_name"),
-            "associated_lane":      payload.get("associated_lane"),
-            "associated_zone":      payload.get("associated_zone"),
-            "associated_sensor":    payload.get("associated_sensor"),
-        })
-
+                "trigger_index":        j,
+                "container_field":      "trigger_outputs.traffic_triggers",
+                "reference_name":       trig.get("reference_name"),
+                "associated_lane":      trig.get("associated_lane"),
+                "associated_zone":      trig.get("associated_zone"),
+                "associated_sensor":    trig.get("associated_sensor"),
+            })
     return events
+
+
+def mqtt_record_has_nonempty_traffic_triggers(record: dict) -> bool:
+    """True if decoded payload has at least one non-empty ``traffic_triggers`` list."""
+    raw = record.get("payload")
+    if raw is None:
+        return False
+    payload, _enc = decode_payload_if_needed(raw)
+    if not isinstance(payload, dict):
+        return False
+    outs = payload.get("trigger_outputs")
+    if not isinstance(outs, list):
+        return False
+    for block in outs:
+        if not isinstance(block, dict):
+            continue
+        tt = block.get("traffic_triggers")
+        if isinstance(tt, list) and len(tt) > 0:
+            return True
+    return False
 
 
 def normalize_trigger_record(
     record: dict,
     run_id: str,
     zip_name: str,
+    source_file: str = "",
 ) -> list[dict]:
     """
     Given one MQTT record from a trigger file, return a list of
     normalized trigger event rows (one row per trigger event found).
-    Returns an empty list if the record has no trigger events.
+    Uses ``payload["timestamp"]`` only for wall time (per-event trigger time).
     """
-    received_at = record.get("receivedAt", "")
-    topic       = record.get("topic", "")
+    topic = record.get("topic", "")
     raw_payload = record.get("payload")
 
     if raw_payload is None:
         return []
 
-    payload, encoding = decode_payload_if_needed(raw_payload)
+    payload, _encoding = decode_payload_if_needed(raw_payload)
     if not isinstance(payload, dict):
         return []
 
-    # Find payload timestamp
-    payload_ts: Any = None
-    for ts_key in ("timestamp", "time", "capture_time", "event_time"):
-        if payload.get(ts_key) is not None:
-            payload_ts = payload[ts_key]
-            break
+    payload_ts: Any = payload.get("timestamp")
+    epoch_ms = parse_payload_timestamp_to_utc_epoch_ms(payload_ts)
 
     trigger_events = extract_trigger_events(payload)
-    rows = []
+    rows: list[dict] = []
     for ev in trigger_events:
-        row = {
-            "run_id":               run_id,
-            "zip_name":             zip_name,
-            "receivedAt":           received_at,
-            "payload_timestamp":    payload_ts,
-            "topic":                topic,
-            "reference_name":       ev.get("reference_name"),
-            "associated_lane":      ev.get("associated_lane"),
-            "associated_zone":      ev.get("associated_zone"),
-            "associated_sensor":    ev.get("associated_sensor"),
-            "trigger_output_index": ev.get("trigger_output_index", 0),
-            "trigger_index":        ev.get("trigger_index", 0),
-            "container_field":      ev.get("container_field", ""),
-        }
-        rows.append(row)
+        rows.append({
+            "run_id":                     run_id,
+            "zip_name":                   zip_name,
+            "source_file":                source_file,
+            "topic":                      topic,
+            "payload_timestamp":          payload_ts,
+            "payload_timestamp_epoch_ms": epoch_ms,
+            "reference_name":             ev.get("reference_name"),
+            "associated_lane":            ev.get("associated_lane"),
+            "associated_zone":            ev.get("associated_zone"),
+            "associated_sensor":          ev.get("associated_sensor"),
+            "trigger_output_index":       ev.get("trigger_output_index", 0),
+            "trigger_index":              ev.get("trigger_index", 0),
+        })
     return rows
 
 
@@ -313,30 +276,37 @@ def parse_topic_string(topic: str) -> dict[str, Any]:
 # Timestamp parsing
 # ─────────────────────────────────────────────────────────────────────────────
 
-def iso_to_epoch_ms(ts: Any) -> float | None:
+def parse_payload_timestamp_to_utc_epoch_ms(ts: Any) -> float | None:
     """
-    Convert an ISO 8601 timestamp string (or numeric) to epoch milliseconds.
-    Returns None if conversion fails.
+    Parse trigger ``payload["timestamp"]`` to Unix epoch milliseconds in UTC.
+
+    Supports ISO-8601 with ``T``, space-separated datetimes, optional timezones,
+    and numeric epoch (seconds if magnitude < 1e12, else ms).
+    Naive datetimes are treated as UTC.
     """
-    if ts is None:
+    if ts is None or isinstance(ts, bool):
         return None
     if isinstance(ts, (int, float)):
-        # Already numeric — detect if seconds or milliseconds
-        return float(ts) if ts > 1e12 else float(ts) * 1000
+        v = float(ts)
+        if v != v:  # NaN
+            return None
+        return v if v > 1e12 else v * 1000.0
     if not isinstance(ts, str):
         return None
+    s = ts.strip()
+    if not s:
+        return None
     try:
-        import datetime
-        s = ts.strip()
-        # Normalise +00:00 → +0000 for strptime
-        s_norm = re.sub(r"([+-]\d{2}):(\d{2})$", r"\1\2", s.rstrip("Z"))
-        if "T" in s_norm:
-            if re.search(r"[+-]\d{4}$", s_norm):
-                dt = datetime.datetime.strptime(s_norm, "%Y-%m-%dT%H:%M:%S%z")
-            else:
-                dt = datetime.datetime.fromisoformat(s_norm)
-                dt = dt.replace(tzinfo=datetime.timezone.utc)
-            return dt.timestamp() * 1000
-    except Exception:
-        pass
-    return None
+        dt = dateutil_parser.parse(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+        return dt.timestamp() * 1000.0
+    except (ValueError, TypeError, OverflowError):
+        return None
+
+
+def iso_to_epoch_ms(ts: Any) -> float | None:
+    """Backward-compatible name; delegates to :func:`parse_payload_timestamp_to_utc_epoch_ms`."""
+    return parse_payload_timestamp_to_utc_epoch_ms(ts)
