@@ -1,0 +1,4 @@
+run_id,zip_name,total_mqtt_records,records_with_trigger_events,empty_records,extracted_trigger_events,unique_reference_names,unique_lanes,unique_zones,unique_sensors
+1016,Training Data 1.zip,2317,2317,0,30121,13,13,13,4
+1023,Training Data 1.zip,2525,1549,976,18588,12,12,12,4
+0106,Training Data 1.zip,2073,2073,0,26949,13,13,13,4

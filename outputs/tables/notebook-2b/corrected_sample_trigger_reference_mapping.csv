@@ -1,0 +1,14 @@
+reference_name,associated_lane,associated_zone,associated_sensor,count,example_run_id
+trigger_11_3,lane22,zoneK,sensor3,5939,1016
+trigger_12_4,lane24,zoneL,sensor3,5939,1016
+trigger_13_5,lane16,zoneM,sensor2,5939,1016
+trigger_14_6,lane17,zoneN,sensor2,5939,1016
+trigger_15_7,lane8,zoneO,sensor4,5939,1016
+trigger_16_8,lane21,zoneP,sensor4,5939,1016
+trigger_17_9,lane20,zoneQ,sensor4,5939,1016
+trigger_18_10,lane18,zoneR,sensor4,5939,1016
+trigger_19_11,lane19,zoneS,sensor4,5939,1016
+trigger_1_0,lane2,zoneA,sensor3,4390,1016
+trigger_20_12,lane15,zoneT,sensor1,5939,1016
+trigger_4_1,lane1,zoneD,sensor2,5939,1016
+trigger_7_2,lane5,zoneG,sensor3,5939,1016
